@@ -22,6 +22,9 @@ class ViewController: UIViewController {
     @IBAction func operatorButtonTapped(_ sender: UIButton) {
         handleOperation(tag: sender.tag)
     }
+    @IBAction func resetButtonTapped(_ sender: UIButton) {
+        handleReset()
+    }
     
     // MARK: - Properties
     let calcul = Calcul()
@@ -59,7 +62,11 @@ class ViewController: UIViewController {
         default:
             break
         }
-        
+    }
+    
+    func handleReset() {
+        textView.text = ""
+        calcul.elements.removeAll()
     }
     
     private func updateText(with number: Int) {

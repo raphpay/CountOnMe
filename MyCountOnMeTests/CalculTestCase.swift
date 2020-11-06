@@ -42,7 +42,4 @@ class CalculTestCase: XCTestCase {
         let result = calcul.divide(number1: 7, with: 2)
         XCTAssertEqual(result, 3.5)
     }
-
-    
-    
 }

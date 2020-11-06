@@ -5,9 +5,10 @@
 //  Created by Raphaël Payet on 01/11/2020.
 //
 
+//Pas de UIKit
 import Foundation
 
-enum Operation: String{
+enum Operation: String {
     case add = "+"
     case minus = "-"
     case multiply = "x"
@@ -17,6 +18,9 @@ enum Operation: String{
 
 class Calcul {
     var elements = String()
+    var firstElement : Double = 0
+    var operationElement : Operation = .add
+    var secondElement : Double = 0
     
     var canAddOperator : Bool {
         return elements.last != " "
