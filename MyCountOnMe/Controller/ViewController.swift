@@ -19,6 +19,7 @@ class ViewController: UIViewController {
         handleNumber(number: sender.tag)
     }
     
+    
     @IBAction func operatorButtonTapped(_ sender: UIButton) {
         handleOperation(tag: sender.tag)
     }
@@ -58,7 +59,7 @@ class ViewController: UIViewController {
         case 4:
             //TODO: Create a string array
             updateText(with: .equal)
-            calcul.equal()
+            calcul.calculate()
         default:
             break
         }
@@ -85,8 +86,7 @@ class ViewController: UIViewController {
                 self.textView.text = self.calcul.elements
             }
         } else {
-            //TODO: Show alert message
-            print("huho")
+            showSystemAlert(message: "Please enter a number, not an operator")
         }
         print(calcul.elements)
     }

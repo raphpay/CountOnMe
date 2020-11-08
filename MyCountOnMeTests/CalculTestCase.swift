@@ -14,32 +14,42 @@ class CalculTestCase: XCTestCase {
         calcul = Calcul()
     }
     
-    func testGivenNumberOneIs6_WhenAdd7ToNumberOne_ThenResultIs13() {
-        let result = calcul.add(number1: 6, with: 7)
-        XCTAssertEqual(result, 13)
+    func testGivenNumberOneIs7_WhenAdding3_ThenResultIs9(){
+        calcul.elements = "6 + 3"
+        calcul.calculate()
+        XCTAssertEqual(calcul.result, 9)
     }
+    
+    func testGivenNumberOneIs6_WhenSubstracting3_ThenResultIs3(){
+        calcul.elements = "6 - 3"
+        calcul.calculate()
+        XCTAssertEqual(calcul.result, 3)
+    }
+    
+    func testGivenNumberOneIs6_WhenMultiplying3_ThenResultIs18(){
+        calcul.elements = "6 x 3"
+        calcul.calculate()
+        XCTAssertEqual(calcul.result, 18)
+    }
+    func testGivenNumberOneIs6_WhenDividingBy3_ThenResultIs2(){
+        calcul.elements = "6 ÷ 3"
+        calcul.calculate()
+        XCTAssertEqual(calcul.result, 2)
+    }
+    func testGivenNumberOneIs7_WhenDividingBy4_ThenResultIs1Point75(){
+        calcul.elements = "7 ÷ 4"
+        calcul.calculate()
+        XCTAssertEqual(calcul.result, 1.75)
+    }
+    
+    func testGivenNumberOneIs7_WhenDividingBy0_ThenResultIsNil(){
+        calcul.elements = "7 ÷ 0"
+        calcul.calculate()
+        XCTAssertNil(calcul.result)
+    }
+    
     func testGivenAnOperatorPlusSpaceAreTheLastElements_WhenCheckingOperator_ThenCanAddOperatorIsFalse() {
         calcul.elements = "1 + "
         XCTAssertFalse(calcul.canAddOperator)
-    }
-    func testGivenNumberOneIs6_WhenSubstract7ToNumberOne_ThenResultIsMinus1() {
-        let result = calcul.substract(number1: 6, with: 7)
-        XCTAssertEqual(result, -1)
-    }
-    func testGivenNumberOneIs6_WhenMultiply7ToNumberOne_ThenResultIs42() {
-        let result = calcul.multiply(number1: 6, with: 7)
-        XCTAssertEqual(result, 42)
-    }
-    func testGivenNumberOneIs6_WhenDivide3ToNumberOne_ThenResultIs2() {
-        let result = calcul.divide(number1: 6, with: 3)
-        XCTAssertEqual(result, 2)
-    }
-    func testGivenNumberOneIs6_WhenDivide0ToNumberOne_ThenResultIsNil() {
-        let result = calcul.divide(number1: 6, with: 0)
-        XCTAssertEqual(result, nil)
-    }
-    func testGivenNumberOneIs7_WhenDivide2ToNumberOne_ThenResultIs3Point5() {
-        let result = calcul.divide(number1: 7, with: 2)
-        XCTAssertEqual(result, 3.5)
     }
 }
