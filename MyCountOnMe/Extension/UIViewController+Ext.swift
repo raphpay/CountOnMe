@@ -8,7 +8,7 @@
 import UIKit
 
 extension UIViewController {
-    func showSystemAlert(title : String = "❌ Oups, something went wrong !",
+    func showSystemAlert(title : String = "❌ Oups, something went wrong ! ❌",
                          message: String = "Please try again later.",
                          type : UIAlertController.Style = .alert) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)

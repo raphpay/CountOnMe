@@ -39,14 +39,6 @@ class ViewController: UIViewController {
     
     
     func handleNumber(number: Int) {
-        switch textView.text.last {
-        case "+": print("plus")
-        case "-": print("minus")
-        case "x": print("mult")
-        case "÷": print("div")
-        default:break
-        }
-        
         updateText(with: number)
     }
     
@@ -57,9 +49,17 @@ class ViewController: UIViewController {
         case 2: updateText(with: .divide)
         case 3: updateText(with: .multiply)
         case 4:
-            //TODO: Create a string array
             updateText(with: .equal)
-            calcul.calculate()
+            calcul.calculate(operation: calcul.equation)
+            guard let result = calcul.result else {
+                showSystemAlert(message: "You can't divide by 0")
+                return
+            }
+            if calcul.resultIsADouble {
+                updateText(with: result)
+            } else {
+                updateText(with: Int(result))
+            }
         default:
             break
         }
@@ -67,28 +67,35 @@ class ViewController: UIViewController {
     
     func handleReset() {
         textView.text = ""
-        calcul.elements.removeAll()
+        calcul.equation.removeAll()
+        calcul.result = nil
     }
     
-    private func updateText(with number: Int) {
-        let stringNumber = String(number)
-        calcul.elements.append("\(stringNumber)")
+    private func updateText(with int: Int) {
+        let stringNumber = String(int)
+        calcul.equation.append("\(stringNumber)")
         DispatchQueue.main.async {
-            self.textView.text = self.calcul.elements
+            self.textView.text = self.calcul.equation
         }
-        print(calcul.elements)
+    }
+    
+    private func updateText(with double: Double) {
+        let stringNumber = String(double)
+        calcul.equation.append("\(stringNumber)")
+        DispatchQueue.main.async {
+            self.textView.text = self.calcul.equation
+        }
     }
     
     private func updateText(with operation : Operation) {
         if calcul.canAddOperator {
-            calcul.elements.append(" \(operation.rawValue) ")
+            calcul.equation.append(" \(operation.rawValue) ")
             DispatchQueue.main.async {
-                self.textView.text = self.calcul.elements
+                self.textView.text = self.calcul.equation
             }
         } else {
             showSystemAlert(message: "Please enter a number, not an operator")
         }
-        print(calcul.elements)
     }
     
 }
