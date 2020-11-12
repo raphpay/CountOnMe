@@ -38,6 +38,10 @@ class ViewController: UIViewController {
     // MARK: - Functions for the actions
     private func handleNumber(number: Int) {
         // When clicking a number, the text view updates with the correct one.
+        guard !calcul.isFinished else {
+            showSystemAlert(message: "Start a new calcul !")
+            return
+        }
         updateText(with: number)
     }
     private func handleOperation(tag: Int) {
