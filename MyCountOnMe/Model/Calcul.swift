@@ -18,12 +18,18 @@ enum Operation: String {
 }
 
 class Calcul {
+    //MARK: - Properties
     var equation = String()
     var firstElement : Double = 0
     var operationElement : Operation = .add
     var secondElement : Double = 0
     var result : Double?
     private var elementArray : [String] = []
+    private var numberOfOperations: Int = 0
+    private var numberOfSpecialOperations: Int = 0
+    private var currentResult: Double?
+    
+    // MARK: - Computed properties
     var canAddOperator : Bool {
         return equation.last != " "
     }
@@ -34,9 +40,6 @@ class Calcul {
         guard result != nil else { return false }
         return floor(result!) != result
     }
-    private var numberOfOperations: Int = 0
-    private var numberOfSpecialOperations: Int = 0
-    private var currentResult: Double?
     
     //MARK: - Main Method
     func calculate(operation : String) {
