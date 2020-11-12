@@ -20,9 +20,6 @@ enum Operation: String {
 class Calcul {
     //MARK: - Properties
     var equation = String()
-    var firstElement : Double = 0
-    var operationElement : Operation = .add
-    var secondElement : Double = 0
     var result : Double?
     private var elementArray : [String] = []
     private var numberOfOperations: Int = 0
