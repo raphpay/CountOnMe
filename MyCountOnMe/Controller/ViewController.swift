@@ -42,42 +42,46 @@ class ViewController: UIViewController {
             showSystemAlert(message: "Start a new calcul !")
             return
         }
+        print(calcul.elements.count)
         updateText(with: number)
+        if calcul.isASpecialOperator {
+            calcul.calculatePrioritizedOperator(at: calcul.elements.count - 2)
+        }
     }
     private func handleOperation(tag: Int) {
         // When clicking an operator, the text view updates with the correct one.
         switch tag {
-        case 0: updateText(with: .add)
-        case 1: updateText(with: .minus)
-        case 2: updateText(with: .divide)
-        case 3: updateText(with: .multiply)
-        case 4: handleEqualTap()
-            
-        default:
-            break
+        case 0 :
+            updateText(with: .plus)
+            calcul.calculate()
+        case 1 :
+            updateText(with: .minus)
+            calcul.calculate()
+        case 2 :
+            updateText(with: .divide)
+            calcul.calculate()
+        case 3 :
+            updateText(with: .multiply)
+            calcul.calculate()
+        case 4 :
+            calcul.expression()
+            updateText(with: .equal)
+//            calcul.finish(calcul.calculatedEquation)
+//            if calcul.resultIsADouble {
+//                updateText(with: Double(calcul.result!))
+//            } else {
+//                updateText(with: Int(calcul.result!))
+//            }
+        
+        default: break
         }
     }
-    private func handleEqualTap() {
-        // This function is called when the user tap "=" on the screen.
-        // It update the text, and handle the resolution of the equation tapped by the user, if one exists.
-        // It also show the result of the equation, if this one exists.
-        // Display the result accordingly as a double or as an integer.
-        updateText(with: .equal)
-        calcul.calculate(operation: calcul.equation)
-        guard let result = calcul.result else {
-            showSystemAlert(message: "You can't divide by 0")
-            return
-        }
-        if calcul.resultIsADouble {
-            updateText(with: result)
-        } else {
-            updateText(with: Int(result))
-        }
-    }
+    
     private func handleReset() {
         // Reset the text view, the calcul equation and result.
         textView.text = ""
         calcul.equation.removeAll()
+        calcul.calculatedEquation.removeAll()
         calcul.result = nil
     }
     
@@ -86,6 +90,7 @@ class ViewController: UIViewController {
     private func updateText(with int: Int) {
         let stringNumber = String(int)
         calcul.equation.append("\(stringNumber)")
+        calcul.calculatedEquation.append("\(stringNumber)")
         DispatchQueue.main.async {
             self.textView.text = self.calcul.equation
         }
@@ -93,13 +98,16 @@ class ViewController: UIViewController {
     private func updateText(with double: Double) {
         let stringNumber = String(double)
         calcul.equation.append("\(stringNumber)")
+        calcul.calculatedEquation.append("\(stringNumber)")
         DispatchQueue.main.async {
             self.textView.text = self.calcul.equation
         }
     }
-    private func updateText(with operation : Operation) {
+    private func updateText(with operation : OperatorType) {
         if calcul.canAddOperator {
+            calcul.lastOperatorType = operation
             calcul.equation.append(" \(operation.rawValue) ")
+            calcul.calculatedEquation.append(" \(operation.rawValue) ")
             DispatchQueue.main.async {
                 self.textView.text = self.calcul.equation
             }

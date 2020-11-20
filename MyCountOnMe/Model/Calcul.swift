@@ -9,166 +9,186 @@
 import Foundation
 
 // An enumeration with the existing operators.
-enum Operation: String {
-    case add = "+"
+enum OperatorType: String {
+    case plus = "+"
     case minus = "-"
-    case multiply = "x"
+    case multiply = "*"
     case divide = "÷"
     case equal = "="
 }
 
 class Calcul {
-    //MARK: - Properties
+    // MARK: - Non Private
     var equation = String()
-    var result : Double?
-    private var elementArray : [String] = []
-    private var numberOfOperations: Int = 0
-    private var numberOfSpecialOperations: Int = 0
-    private var currentResult: Double?
+    var calculatedEquation = String()
+    var result: Double?
+    var lastOperatorType: OperatorType = .plus
     
-    // MARK: - Computed properties
-    var canAddOperator : Bool {
-        return equation.last != " "
+    var isFinished : Bool {
+        result != nil
     }
-    var isFinished: Bool {
-        return result != nil
+    var canAddOperator: Bool {
+        true
     }
     var resultIsADouble: Bool {
         guard result != nil else { return false }
         return floor(result!) != result
     }
+    var canReduceOperation : Bool {
+        return elements.count > 3 &&
+            lastOperatorType == .plus || lastOperatorType == .minus
+            || lastOperatorType != .multiply || lastOperatorType == .divide
+    }
+    var isFirstReduction: Bool = true
+    var isASpecialOperator: Bool {
+        lastOperatorType == OperatorType.multiply || lastOperatorType == OperatorType.divide
+    }
+    var elements = [String]()
     
-    //MARK: - Main Method
-    func calculate(operation : String) {
-        // This function is th eonly one not private. It can be accessed anywhere on the project.
-        // This function handle the calculation of an equation.
-        // First, it create a string array of the equation. Each number is an element of the array.
-        // Then it gets the number of special ( x and ÷ ), and non special ( + and - ) operations to be done.
-        // It calculates the priority operations if there is, then the normal ones.
-        // Finally the result is updated.
-        createStringArray()
-        numberOfOperations = getNumberOfOperations()
-        numberOfSpecialOperations = getNumberOfSpecialOperations()
-        while numberOfOperations != 0 {
-            calculatePriorityOperators()
-            calculateNormalOperators()
-        }
-        result = currentResult
+    // MARK: - Private
+    
+    
+    
+    // MARK: - Non Private
+    
+    func createArray(from string: String) {
+        print("createStringArray")
+        print(string)
+        elements = string.components(separatedBy: " ")
+        print("elements : \(elements)")
     }
     
-    private func calculatePriorityOperators() {
-        // This function passes through all the prioritized equations and execute them.
-        // We get the index of the special operation, then the two number that compose this part of the equation.
-        // When the equation is done, we save the current result, and continue if another special operation is pending.
-        while numberOfSpecialOperations != 0 {
-            let index = getIndexOfSpecialOperation()
-            guard let firstOperand = Double(elementArray[index - 1]),
-                  let secondOperand = Double(elementArray[index + 1]) else { return }
-            let currentOperation = getOperationType(from: elementArray[index])
-            currentResult = makeOperation(number1: firstOperand, number2: secondOperand, operatorType: currentOperation)
-            guard currentResult != nil else { numberOfSpecialOperations = 0; return }
-            createNewEquation(with: currentResult!, at: index - 1)
-            numberOfOperations = getNumberOfOperations()
-            numberOfSpecialOperations = getNumberOfSpecialOperations()
+    func calculate() {
+        print("calculate")
+        if isFirstReduction {
+            print("isFirstReduction")
+            createArray(from: equation)
+        } else {
+            print("!isFirstReduction")
+            print("currentEquation !isFirstReduction \(calculatedEquation)")
+            createArray(from: calculatedEquation)
+        }
+        
+        if canReduceOperation {
+            print("canReduceOperation")
+            reduceOperation()
+        } else {
+            // Je suis dans le cas du x ou du ÷
+            // Attendre le calcul
+            print(calculatedEquation)
         }
     }
     
-    private func calculateNormalOperators() {
-        // Same principe as the method below, except that this ones passes through the normal operations.
-        while numberOfOperations != 0 {
-            guard let firstOperand = Double(elementArray[0]),
-                  let secondOperand = Double(elementArray[2]) else { return }
-            let currentOperation = getOperationType(from: elementArray[1])
-            currentResult = makeOperation(number1: firstOperand, number2: secondOperand, operatorType: currentOperation)
-            guard currentResult != nil else { numberOfOperations = 0; return  }
-            createNewEquation(with: currentResult!, at: 0)
-            numberOfOperations = getNumberOfOperations()
+    func expression() {
+        print(equation)
+        let mathExpression = NSExpression(format: equation)
+        print("mathExpression \(mathExpression)")
+        if let mathValue = mathExpression.expressionValue(with: nil, context: nil) as? Double {
+            print(mathValue)
         }
     }
-    // MARK: - Calculation Methods
-    // The following method return a number with the according calculation between two numbers.
-    private func add(number1 : Double, with number2: Double) -> Double {
+    
+    func calculatePrioritizedOperator(at index: Int) {
+        print("calculatePrioritizedOperator")
+        createArray(from: calculatedEquation)
+        guard let firstOperand = Double(elements[index - 1]),
+              let secondOperand = Double(elements[index + 1]) else { print("return");return }
+        let currentOperatorType = convertOperator(from: elements[index])
+        print(firstOperand)
+        print(secondOperand)
+        print(currentOperatorType)
+        var currentResult: Double?
+        
+        switch currentOperatorType {
+        case .multiply: currentResult = multiply(number1: firstOperand, with: secondOperand)
+        case .divide: currentResult = divide(number1: firstOperand, with: secondOperand)
+        default: break
+        }
+        
+        guard currentResult != nil else { return }
+        print("ok")
+        createCurrentEquation(with: currentResult!, at: index - 1)
+    }
+    
+    func finish(_ equation : String) {
+        print("finishEquation")
+        createArray(from: equation)
+        print("finishEquation \(elements)")
+        guard let firstOperand = Double(elements[0]),
+              let secondOperand = Double(elements[2]) else { return }
+        let currentOperatorType = convertOperator(from: elements[1])
+        print(firstOperand)
+        print(secondOperand)
+        print(currentOperatorType)
+        switch currentOperatorType {
+        case .plus: result = add(number1: firstOperand, with: secondOperand)
+        case .minus: result = substract(number1: firstOperand, with: secondOperand)
+        case .multiply: result = multiply(number1: firstOperand, with: secondOperand)
+        case .divide: result = divide(number1: firstOperand, with: secondOperand)
+        default: break
+        }
+        print(result)
+    }
+    
+    // MARK: - Private
+    private func add(number1: Double, with number2: Double) -> Double {
         return number1 + number2
     }
-    private func substract(number1 : Double, with number2: Double) -> Double {
+    private func substract(number1: Double, with number2: Double) -> Double {
         return number1 - number2
     }
-    private func multiply(number1 : Double, with number2: Double) -> Double{
+    private func multiply(number1: Double, with number2: Double) -> Double {
         return number1 * number2
     }
-    
-    private func divide(number1 : Double, with number2: Double) -> Double? {
+    private func divide(number1: Double, with number2: Double) -> Double? {
         guard number2 != 0 else { return nil }
         return number1 / number2
     }
     
-    // MARK: - Helper Methods
-    private func createStringArray(){
-        // Create a string array from the string equation
-        elementArray = equation.components(separatedBy: " ")
-    }
-    private func getNumberOfOperations() -> Int {
-        // This method pass through the element of the equation and increment a variable that is returned.
-        var numberOfOperations = 0
-        for element in elementArray {
-            if element == "+" || element == "-" || element == "x" || element == "÷" {
-                numberOfOperations += 1
-            }
-        }
-        return numberOfOperations
-    }
-    private func getNumberOfSpecialOperations() -> Int {
-        // Same principe has the method below. Except this one focus on the special operators.
-        var numberOfSpecialOperations = 0
-        for element in elementArray {
-            if element == "x" || element == "÷" {
-                numberOfSpecialOperations += 1
-            }
-        }
-        return numberOfSpecialOperations
-    }
-    private func getIndexOfSpecialOperation() -> Int {
-        // Get and return the index of the special operation
-        var index = 0
-        for element in 0..<elementArray.count {
-            if elementArray[element] == "x" || elementArray[element] == "÷" {
-                index = element
-            }
-        }
-        return index
-    }
-    private func getOperationType(from string: String) -> Operation {
-        // Get operation type from a string character
-        var operationType : Operation = .add
-        switch string {
-        case "+": operationType = .add
-        case "-" : operationType = .minus
-        case "x" : operationType = .multiply
-        case "÷" : operationType = .divide
-        default: break
-        }
-        return operationType
-    }
-    private func makeOperation(number1 : Double, number2: Double, operatorType: Operation) -> Double? {
-        // This method do the right calculation according to the operator type
+    
+    private func reduceOperation() {
+        print("reduceOperation")
+        guard let firstOperand = Double(elements[0]),
+              let secondOperand = Double(elements[2]) else { return }
+        let currentOperatorType = convertOperator(from: elements[1])
         var currentResult : Double?
-        switch operatorType {
-        case .add: currentResult = add(number1: number1, with: number2)
-        case .minus: currentResult = substract(number1: number1, with: number2)
-        case .multiply : currentResult = multiply(number1: number1, with: number2)
-        case .divide : currentResult = divide(number1: number1, with: number2)
+        print(firstOperand)
+        print(currentOperatorType)
+        print(secondOperand)
+        switch currentOperatorType {
+        case .plus: currentResult = add(number1: firstOperand, with: secondOperand)
+        case .minus: currentResult = substract(number1: firstOperand, with: secondOperand)
+        case .multiply: currentResult = multiply(number1: firstOperand, with: secondOperand)
+        case .divide: currentResult = divide(number1: firstOperand, with: secondOperand)
         default: break
         }
-        return currentResult
+        print("= \(currentResult)")
+        guard currentResult != nil else { return }
+        createCurrentEquation(with: currentResult!)
+        isFirstReduction = false
     }
-    private func createNewEquation(with currentResult : Double, at index : Int) {
-        // Remove the first operand, the operator, and the second operand from the last calcul.
-        // Then insert at the index of the last first operand, the new current result.
-        // It creates then a new equation.
-        guard !elementArray.isEmpty else { return }
-        elementArray.remove(at: index)
-        elementArray.remove(at: index)
-        elementArray.remove(at: index)
-        elementArray.insert(String(currentResult), at: index)
+    
+    private func convertOperator(from string : String) -> OperatorType {
+        var operatorType = OperatorType.minus
+        switch string {
+        case "+": operatorType = .plus
+        case "-": operatorType = .minus
+        case "x": operatorType = .multiply
+        case "÷": operatorType = .divide
+        default: break
+        }
+        return operatorType
     }
+    private func createCurrentEquation(with currentResult: Double, at index: Int = 0) {
+        print("createCurrentEquation")
+        elements.remove(at: index)
+        elements.remove(at: index)
+        elements.remove(at: index)
+        print("elements 1 :  \(elements)")
+        elements.insert(String(currentResult), at: index)
+        calculatedEquation = elements.joined(separator: " ")
+        print(calculatedEquation)
+        print("elements 2 : \(elements)")
+    }
+    
 }
