@@ -27,7 +27,6 @@ class ViewController: UIViewController {
     
     // MARK: - Properties
     let calcul = Calcul()
-    var result = Double(0)
     
     // MARK: - Lifecycle Methods
     override func viewDidLoad() {
@@ -37,84 +36,49 @@ class ViewController: UIViewController {
     
     // MARK: - Functions for the actions
     private func handleNumber(number: Int) {
-        // When clicking a number, the text view updates with the correct one.
-        guard !calcul.isFinished else {
-            showSystemAlert(message: "Start a new calcul !")
-            return
-        }
-        print(calcul.elements.count)
         updateText(with: number)
-        if calcul.isASpecialOperator {
-            calcul.calculatePrioritizedOperator(at: calcul.elements.count - 2)
-        }
     }
     private func handleOperation(tag: Int) {
-        // When clicking an operator, the text view updates with the correct one.
         switch tag {
-        case 0 :
-            updateText(with: .plus)
-            calcul.calculate()
-        case 1 :
-            updateText(with: .minus)
-            calcul.calculate()
-        case 2 :
-            updateText(with: .divide)
-            calcul.calculate()
-        case 3 :
-            updateText(with: .multiply)
-            calcul.calculate()
-        case 4 :
-            calcul.expression()
+        case 0: updateText(with: .plus)
+        case 1: updateText(with: .minus)
+        case 2: updateText(with: .divide)
+        case 3: updateText(with: .multiply)
+        case 4:
             updateText(with: .equal)
-//            calcul.finish(calcul.calculatedEquation)
-//            if calcul.resultIsADouble {
-//                updateText(with: Double(calcul.result!))
-//            } else {
-//                updateText(with: Int(calcul.result!))
-//            }
-        
         default: break
+        }
+        calcul.startCalculationProcess()
+        if calcul.result != nil {
+            if calcul.isResultADouble { updateText(with: Int(calcul.result!))}
+            else { updateText(with: calcul.result!.round(to: 2))}
         }
     }
     
     private func handleReset() {
-        // Reset the text view, the calcul equation and result.
-        textView.text = ""
         calcul.equation.removeAll()
-        calcul.calculatedEquation.removeAll()
+        calcul.elements.removeAll()
+        calcul.savedEquation.removeAll()
         calcul.result = nil
+        textView.text = calcul.equation
     }
     
     // MARK: - User Interface
     // The following functions update the text view with the right number, or character.
     private func updateText(with int: Int) {
-        let stringNumber = String(int)
-        calcul.equation.append("\(stringNumber)")
-        calcul.calculatedEquation.append("\(stringNumber)")
-        DispatchQueue.main.async {
-            self.textView.text = self.calcul.equation
-        }
+        calcul.equation.append("\(int)")
+        calcul.savedEquation.append("\(int)")
+        textView.text = calcul.equation
     }
     private func updateText(with double: Double) {
-        let stringNumber = String(double)
-        calcul.equation.append("\(stringNumber)")
-        calcul.calculatedEquation.append("\(stringNumber)")
-        DispatchQueue.main.async {
-            self.textView.text = self.calcul.equation
-        }
+        calcul.equation.append("\(double)")
+        calcul.savedEquation.append("\(double)")
+        textView.text = calcul.equation
     }
     private func updateText(with operation : OperatorType) {
-        if calcul.canAddOperator {
-            calcul.lastOperatorType = operation
-            calcul.equation.append(" \(operation.rawValue) ")
-            calcul.calculatedEquation.append(" \(operation.rawValue) ")
-            DispatchQueue.main.async {
-                self.textView.text = self.calcul.equation
-            }
-        } else {
-            showSystemAlert(message: "Please enter a number, not an operator")
-        }
+        calcul.equation.append(" \(operation.rawValue) ")
+        calcul.savedEquation.append(" \(operation.rawValue) ")
+        textView.text = calcul.equation
     }
-    
 }
 

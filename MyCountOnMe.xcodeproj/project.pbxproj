@@ -17,6 +17,7 @@
 		863414E3254F0700003C004F /* MyCountOnMeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 863414E2254F0700003C004F /* MyCountOnMeTests.swift */; };
 		863414ED254F0717003C004F /* CalculTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 863414EC254F0717003C004F /* CalculTestCase.swift */; };
 		86B3DA2425585B1F0049281C /* UIViewController+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86B3DA2325585B1F0049281C /* UIViewController+Ext.swift */; };
+		86CE20D02568345700B58CBD /* Double+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86CE20CF2568345700B58CBD /* Double+Ext.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +45,7 @@
 		863414E4254F0700003C004F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		863414EC254F0717003C004F /* CalculTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculTestCase.swift; sourceTree = "<group>"; };
 		86B3DA2325585B1F0049281C /* UIViewController+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Ext.swift"; sourceTree = "<group>"; };
+		86CE20CF2568345700B58CBD /* Double+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+Ext.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +146,7 @@
 			isa = PBXGroup;
 			children = (
 				86B3DA2325585B1F0049281C /* UIViewController+Ext.swift */,
+				86CE20CF2568345700B58CBD /* Double+Ext.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -250,6 +253,7 @@
 			files = (
 				863414C2254ECA3B003C004F /* ViewController.swift in Sources */,
 				863414BE254ECA3B003C004F /* AppDelegate.swift in Sources */,
+				86CE20D02568345700B58CBD /* Double+Ext.swift in Sources */,
 				86B3DA2425585B1F0049281C /* UIViewController+Ext.swift in Sources */,
 				863414C0254ECA3B003C004F /* SceneDelegate.swift in Sources */,
 				863414DA254F054C003C004F /* Calcul.swift in Sources */,

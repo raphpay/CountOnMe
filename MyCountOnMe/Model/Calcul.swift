@@ -12,183 +12,163 @@ import Foundation
 enum OperatorType: String {
     case plus = "+"
     case minus = "-"
-    case multiply = "*"
+    case multiply = "x"
     case divide = "÷"
     case equal = "="
 }
 
 class Calcul {
-    // MARK: - Non Private
-    var equation = String()
-    var calculatedEquation = String()
-    var result: Double?
-    var lastOperatorType: OperatorType = .plus
+    // MARK: - Properties
+    var equation            = String()
+    var savedEquation       = String()
+    var result              : Double? = nil
+    var elements            = [String]()
     
-    var isFinished : Bool {
-        result != nil
-    }
-    var canAddOperator: Bool {
-        true
-    }
-    var resultIsADouble: Bool {
+    // MARK: - Private Properties
+    private var savedEquationHasChanged     = false
+    private var isCalculationSuspended      = false
+    private var savedIndex                  = Int()
+    
+    // MARK: - Computed Properties
+    var isResultADouble: Bool {
         guard result != nil else { return false }
-        return floor(result!) != result
-    }
-    var canReduceOperation : Bool {
-        return elements.count > 3 &&
-            lastOperatorType == .plus || lastOperatorType == .minus
-            || lastOperatorType != .multiply || lastOperatorType == .divide
-    }
-    var isFirstReduction: Bool = true
-    var isASpecialOperator: Bool {
-        lastOperatorType == OperatorType.multiply || lastOperatorType == OperatorType.divide
-    }
-    var elements = [String]()
-    
-    // MARK: - Private
-    
-    
-    
-    // MARK: - Non Private
-    
-    func createArray(from string: String) {
-        print("createStringArray")
-        print(string)
-        elements = string.components(separatedBy: " ")
-        print("elements : \(elements)")
+        return floor(result!) == result
     }
     
-    func calculate() {
-        print("calculate")
-        if isFirstReduction {
-            print("isFirstReduction")
-            createArray(from: equation)
-        } else {
-            print("!isFirstReduction")
-            print("currentEquation !isFirstReduction \(calculatedEquation)")
-            createArray(from: calculatedEquation)
+    private var isCalculationPossible: Bool {
+        return elements.count > 3
+    }
+
+    private var isLastOperatorHasPriority: Bool {
+        if lastOperatorType == .multiply || lastOperatorType == .divide {
+            return true
         }
-        
-        if canReduceOperation {
-            print("canReduceOperation")
+        return false
+    }
+    
+    private var lastOperatorType: OperatorType? {
+        guard let lastElement = elements.last,
+              let lastIndex = elements.lastIndex(of: lastElement),
+              let operatorType = convertIntoOperatorType(elements[lastIndex - 1]) else { return nil }
+        return operatorType
+    }
+    
+    private var lastOperatorIndex: Int {
+        return elements.count - 2
+    }
+    
+    private var isEquationReduced: Bool {
+        return elements.count == 5 && lastOperatorType == .equal
+    }
+    
+    // MARK: - Open Methods
+    func startCalculationProcess() {
+        updateEquationArray(with: equation)
+        if isCalculationSuspended {
+            calculate(at: savedIndex)
+            isCalculationSuspended = false
+        }
+        else {
+            if !isEquationReduced { reduceOperation() }
+        }
+        if isEquationReduced {
+            finishCalcul()
+        } else {
             reduceOperation()
-        } else {
-            // Je suis dans le cas du x ou du ÷
-            // Attendre le calcul
-            print(calculatedEquation)
         }
     }
     
-    func expression() {
-        print(equation)
-        let mathExpression = NSExpression(format: equation)
-        print("mathExpression \(mathExpression)")
-        if let mathValue = mathExpression.expressionValue(with: nil, context: nil) as? Double {
-            print(mathValue)
-        }
-    }
-    
-    func calculatePrioritizedOperator(at index: Int) {
-        print("calculatePrioritizedOperator")
-        createArray(from: calculatedEquation)
-        guard let firstOperand = Double(elements[index - 1]),
-              let secondOperand = Double(elements[index + 1]) else { print("return");return }
-        let currentOperatorType = convertOperator(from: elements[index])
-        print(firstOperand)
-        print(secondOperand)
-        print(currentOperatorType)
-        var currentResult: Double?
-        
-        switch currentOperatorType {
-        case .multiply: currentResult = multiply(number1: firstOperand, with: secondOperand)
-        case .divide: currentResult = divide(number1: firstOperand, with: secondOperand)
-        default: break
-        }
-        
-        guard currentResult != nil else { return }
-        print("ok")
-        createCurrentEquation(with: currentResult!, at: index - 1)
-    }
-    
-    func finish(_ equation : String) {
-        print("finishEquation")
-        createArray(from: equation)
-        print("finishEquation \(elements)")
-        guard let firstOperand = Double(elements[0]),
-              let secondOperand = Double(elements[2]) else { return }
-        let currentOperatorType = convertOperator(from: elements[1])
-        print(firstOperand)
-        print(secondOperand)
-        print(currentOperatorType)
-        switch currentOperatorType {
-        case .plus: result = add(number1: firstOperand, with: secondOperand)
-        case .minus: result = substract(number1: firstOperand, with: secondOperand)
-        case .multiply: result = multiply(number1: firstOperand, with: secondOperand)
-        case .divide: result = divide(number1: firstOperand, with: secondOperand)
-        default: break
-        }
-        print(result)
-    }
-    
-    // MARK: - Private
-    private func add(number1: Double, with number2: Double) -> Double {
+    // MARK: - Mathematical Methods
+    private func add(number1 : Double, number2: Double) -> Double {
         return number1 + number2
     }
-    private func substract(number1: Double, with number2: Double) -> Double {
+    
+    private func substract(number1: Double, number2: Double) -> Double {
         return number1 - number2
     }
-    private func multiply(number1: Double, with number2: Double) -> Double {
+    
+    private func multiply(number1: Double, number2: Double) -> Double {
         return number1 * number2
     }
-    private func divide(number1: Double, with number2: Double) -> Double? {
+    
+    private func divide(number1: Double, number2: Double) -> Double? {
         guard number2 != 0 else { return nil }
         return number1 / number2
     }
     
-    
+    // MARK: - Private Methods
     private func reduceOperation() {
-        print("reduceOperation")
-        guard let firstOperand = Double(elements[0]),
-              let secondOperand = Double(elements[2]) else { return }
-        let currentOperatorType = convertOperator(from: elements[1])
-        var currentResult : Double?
-        print(firstOperand)
-        print(currentOperatorType)
-        print(secondOperand)
-        switch currentOperatorType {
-        case .plus: currentResult = add(number1: firstOperand, with: secondOperand)
-        case .minus: currentResult = substract(number1: firstOperand, with: secondOperand)
-        case .multiply: currentResult = multiply(number1: firstOperand, with: secondOperand)
-        case .divide: currentResult = divide(number1: firstOperand, with: secondOperand)
-        default: break
+        if isCalculationPossible {
+            if isLastOperatorHasPriority {
+                savedIndex = lastOperatorIndex
+                isCalculationSuspended = true
+            } else {
+                if isEquationReduced {
+                    finishCalcul()
+                } else {
+                    calculate(at: 1)
+                }
+            }
         }
-        print("= \(currentResult)")
-        guard currentResult != nil else { return }
-        createCurrentEquation(with: currentResult!)
-        isFirstReduction = false
     }
     
-    private func convertOperator(from string : String) -> OperatorType {
-        var operatorType = OperatorType.minus
+    private func calculate(at index: Int) {
+        updateEquationArray(with: savedEquationHasChanged ? savedEquation : equation)
+        guard let firstOperand = Double(elements[index - 1]),
+              let lastOperator = convertIntoOperatorType(elements[index]),
+              let secondOperand = Double(elements[index + 1]) else {return }
+        var currentResult = Double()
+        switch lastOperator {
+        case .plus      : currentResult = add(number1: firstOperand, number2: secondOperand)
+        case .minus     : currentResult = substract(number1: firstOperand, number2: secondOperand)
+        case .multiply  : currentResult = multiply(number1: firstOperand, number2: secondOperand)
+        case .divide    :
+            guard secondOperand != 0 else { return }
+            currentResult = divide(number1: firstOperand, number2: secondOperand)!
+        default         : break
+        }
+        updateSavedEquation(with: currentResult, at: index)
+    }
+    
+    private func finishCalcul() {
+        updateEquationArray(with: savedEquationHasChanged ? savedEquation : equation)
+        guard let firstOperand = Double(elements[0]),
+              let operatorType = convertIntoOperatorType(elements[1]),
+              let secondOperand = Double(elements[2]) else {  return }
+        switch operatorType {
+        case .plus      : result = add(number1: firstOperand, number2: secondOperand)
+        case .minus     : result = substract(number1: firstOperand, number2: secondOperand)
+        case .multiply  : result = multiply(number1: firstOperand, number2: secondOperand)
+        case .divide    :
+            guard secondOperand != 0 else { return }
+            result = divide(number1: firstOperand, number2: secondOperand)!
+        default: break
+        }
+    }
+    
+    private func updateEquationArray(with equation: String) {
+        elements = savedEquation.components(separatedBy: " ")
+    }
+    
+    private func convertIntoOperatorType(_ string: String) -> OperatorType? {
+        var operatorType: OperatorType?
         switch string {
         case "+": operatorType = .plus
         case "-": operatorType = .minus
         case "x": operatorType = .multiply
         case "÷": operatorType = .divide
-        default: break
+        case "=": operatorType = .equal
+        default : break
         }
         return operatorType
     }
-    private func createCurrentEquation(with currentResult: Double, at index: Int = 0) {
-        print("createCurrentEquation")
-        elements.remove(at: index)
-        elements.remove(at: index)
-        elements.remove(at: index)
-        print("elements 1 :  \(elements)")
-        elements.insert(String(currentResult), at: index)
-        calculatedEquation = elements.joined(separator: " ")
-        print(calculatedEquation)
-        print("elements 2 : \(elements)")
-    }
     
+    private func updateSavedEquation(with currentResult: Double, at index: Int) {
+        elements.remove(at: index - 1)
+        elements.remove(at: index - 1)
+        elements.remove(at: index - 1)
+        elements.insert(String(currentResult), at: index - 1)
+        savedEquation = elements.joined(separator: " ")
+        savedEquationHasChanged = true
+    }
 }
