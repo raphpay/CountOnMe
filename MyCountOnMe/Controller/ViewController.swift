@@ -50,7 +50,9 @@ class ViewController: UIViewController {
         }
         calcul.startCalculationProcess()
         if calcul.result != nil {
-            if calcul.isResultADouble { updateText(with: Int(calcul.result!))}
+            if !calcul.isResultADouble {
+                updateText(with: Int(calcul.result!))
+            }
             else { updateText(with: calcul.result!.round(to: 2))}
         }
     }

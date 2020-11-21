@@ -32,33 +32,37 @@ class Calcul {
     // MARK: - Computed Properties
     var isResultADouble: Bool {
         guard result != nil else { return false }
-        return floor(result!) == result
+        return floor(result!) != result
     }
     
-    private var isCalculationPossible: Bool {
-        return elements.count > 3
+    var isCalculationPossible: Bool {
+        return elements.count >= 3
+    }
+    
+    var lastOperatorType: OperatorType? {
+        guard let lastIndex = lastOperatorIndex,
+            let operatorType = convertIntoOperatorType(elements[lastIndex]) else { return nil }
+        return operatorType
     }
 
-    private var isLastOperatorHasPriority: Bool {
+    var isLastOperatorHasPriority: Bool {
         if lastOperatorType == .multiply || lastOperatorType == .divide {
             return true
         }
         return false
     }
     
-    private var lastOperatorType: OperatorType? {
-        guard let lastElement = elements.last,
-              let lastIndex = elements.lastIndex(of: lastElement),
-              let operatorType = convertIntoOperatorType(elements[lastIndex - 1]) else { return nil }
-        return operatorType
-    }
-    
-    private var lastOperatorIndex: Int {
+    var lastOperatorIndex: Int? {
+        guard elements.count > 2 else { return nil }
         return elements.count - 2
     }
     
-    private var isEquationReduced: Bool {
-        return elements.count == 5 && lastOperatorType == .equal
+    var isEquationReduced: Bool {
+        return elements.count <= 5 && lastOperatorType == .equal
+    }
+    
+    var isEquationFinished: Bool {
+        return elements.count <= 3 && lastOperatorType == .equal
     }
     
     // MARK: - Open Methods
@@ -69,10 +73,15 @@ class Calcul {
             isCalculationSuspended = false
         }
         else {
-            if !isEquationReduced { reduceOperation() }
+            if !isEquationReduced {
+                reduceOperation() }
         }
         if isEquationReduced {
-            finishCalcul()
+            if !isEquationFinished {
+                finishCalcul()
+            } else {
+                result = Double(elements[0])!
+            }
         } else {
             reduceOperation()
         }
@@ -100,7 +109,8 @@ class Calcul {
     private func reduceOperation() {
         if isCalculationPossible {
             if isLastOperatorHasPriority {
-                savedIndex = lastOperatorIndex
+                guard let lastIndex = lastOperatorIndex else { return }
+                savedIndex = lastIndex
                 isCalculationSuspended = true
             } else {
                 if isEquationReduced {
