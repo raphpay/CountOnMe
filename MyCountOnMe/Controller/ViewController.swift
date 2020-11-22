@@ -44,43 +44,32 @@ class ViewController: UIViewController {
         case 1: updateText(with: .minus)
         case 2: updateText(with: .divide)
         case 3: updateText(with: .multiply)
-        case 4:
-            updateText(with: .equal)
+        case 4: updateText(with: .equal)
         default: break
         }
         calcul.startCalculationProcess()
-        if calcul.result != nil {
-            if !calcul.isResultADouble {
-                updateText(with: Int(calcul.result!))
-            }
-            else { updateText(with: calcul.result!.round(to: 2))}
-        }
+        guard let result = calcul.result else { return }
+        updateText(with: result)
     }
     
     private func handleReset() {
         calcul.equation.removeAll()
-        calcul.elements.removeAll()
-        calcul.savedEquation.removeAll()
         calcul.result = nil
-        textView.text = calcul.equation
+        textView.text = ""
     }
     
     // MARK: - User Interface
     // The following functions update the text view with the right number, or character.
     private func updateText(with int: Int) {
         calcul.equation.append("\(int)")
-        calcul.savedEquation.append("\(int)")
-        textView.text = calcul.equation
+        textView.text.append("\(int)")
     }
     private func updateText(with double: Double) {
         calcul.equation.append("\(double)")
-        calcul.savedEquation.append("\(double)")
-        textView.text = calcul.equation
+        textView.text.append("\(double)")
     }
     private func updateText(with operation : OperatorType) {
         calcul.equation.append(" \(operation.rawValue) ")
-        calcul.savedEquation.append(" \(operation.rawValue) ")
-        textView.text = calcul.equation
+        textView.text.append(" \(operation.rawValue) ")
     }
 }
-
