@@ -49,7 +49,11 @@ class ViewController: UIViewController {
         }
         calcul.startCalculationProcess()
         guard let result = calcul.result else { return }
-        updateText(with: result)
+        if calcul.isResultADouble {
+            updateText(with: result.round(to: 2))
+        } else {
+            updateText(with: Int(result))
+        }
     }
     
     private func handleReset() {

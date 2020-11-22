@@ -21,6 +21,10 @@ class Calcul {
     var equation = String()
     var result: Double?
     private var savedIndex: Int = 0
+    var isResultADouble: Bool {
+        guard result != nil else { return false  }
+        return floor(result!) != result!
+    }
     private var elements: [String] {
         return equation.split(separator: " ").map { "\($0)"}
     }
@@ -56,63 +60,37 @@ class Calcul {
     
     
     func startCalculationProcess() {
-        print("startCalculationProcess")
-        print(canCalculate)
         if isEnoughElements {
-            print("isEnoughElements")
-            print(canCalculate)
             if isEquationReduced {
-                print("isEquationReduced")
                 calculate(at: 0)
             } else {
-                print("! isEquationReduced")
-                print(canCalculate)
                 if lastOperatorHasPriority {
-                    print("lastOperatorHasPriority")
-                    print(canCalculate)
                     if canCalculate {
-                        print("canCalculate")
-                        print(canCalculate)
                         calculate(at: savedIndex)
                         canCalculate = false
                         if isEquationReduced {
-                            print("isEquationReduced")
-                            print(canCalculate)
                             calculate(at: 0)
                         } else {
-                            print("! isEquationReduced")
-                            print(canCalculate)
                             if lastOperatorHasPriority {
-                                print("lastOperatorHasPriority")
-                                print(canCalculate)
                                 if canCalculate {
-                                    print("canCalculate")
-                                    print(canCalculate)
                                 } else {
-                                    print("! canCalculate")
-                                    print(canCalculate)
                                     savedIndex = elements.count - 2
                                     canCalculate = true
                                 }
                             }
-                            print("1")
                             canCalculate = true
                         }
                     } else {
-                        print("! canCalculate")
-                        print(canCalculate)
                         savedIndex = elements.count - 2
                         canCalculate = true
                     }
                 } else {
-                    print("! lastOperatorHasPriority")
                     calculate(at: 0)
                 }
             }
         }
     }
     private func calculate(at index : Int) {
-        print("calculate")
         guard let firstOperand = Double(elements[index]),
               let operatorType = convertIntoOperator(elements[index + 1]),
               let secondOperand = Double(elements[index + 2]) else { return }
@@ -126,15 +104,12 @@ class Calcul {
             break
         }
         guard let unwrappedResult = currentResult else { return }
-        print("result = \(unwrappedResult)")
-        print(canCalculate)
         if isEquationReduced {
             result = unwrappedResult
             canCalculate = false
         } else {
             createNewEquation(with: unwrappedResult, at: index)
         }
-        print(canCalculate)
     }
     
     private func add(number1: Double, with number2: Double) -> Double {
