@@ -72,11 +72,8 @@ class Calcul {
                             calculate(at: 0)
                         } else {
                             if lastOperatorHasPriority {
-                                if canCalculate {
-                                } else {
-                                    savedIndex = elements.count - 2
-                                    canCalculate = true
-                                }
+                                savedIndex = elements.count - 2
+                                canCalculate = true
                             }
                             canCalculate = true
                         }
@@ -90,6 +87,7 @@ class Calcul {
             }
         }
     }
+    
     private func calculate(at index : Int) {
         guard let firstOperand = Double(elements[index]),
               let operatorType = convertIntoOperator(elements[index + 1]),
