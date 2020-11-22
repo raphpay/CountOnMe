@@ -23,6 +23,17 @@ class CalculTestCase: XCTestCase {
         calcul.result = 3.5
         XCTAssertTrue(calcul.isResultADouble)
     }
+    func testGivenEquationIsNil_WhenCheckingIfCanAddOperator_ThenPropertyIsFalse(){
+        XCTAssertFalse(calcul.canAddOperator)
+    }
+    func testGivenEquationIs3Plus3Equal_WhenCheckingIfCalculIsFinish_ThenPropertyIsTrue(){
+        calculate(equation: "3 + 3 =")
+        XCTAssertTrue(calcul.isFinished)
+    }
+    func testGivenEquationIs3Plus_WhenCheckingLastOperatorType_ThenPropertyIsPlus(){
+        calcul.equation = "3 +"
+        XCTAssertEqual(calcul.lastOperatorType, .plus)
+    }
     
     func testGivenEquationIs3Plus3_WhenCalculating_ThenResultIs6(){
         calculate(equation: "3 + 3 =")

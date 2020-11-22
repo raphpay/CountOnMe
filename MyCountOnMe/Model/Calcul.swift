@@ -20,21 +20,33 @@ enum OperatorType: String {
 class Calcul {
     var equation = String()
     var result: Double?
-    private var savedIndex: Int = 0
     var isResultADouble: Bool {
         guard result != nil else { return false  }
         return floor(result!) != result!
     }
+    var canAddOperator: Bool {
+        guard let lastElement = elements.last,
+            convertIntoOperator(lastElement) == nil else { return false }
+//        if let lastElement = elements.last,
+//           convertIntoOperator(lastElement) == nil {
+//            return false
+//        }
+        return true
+    }
+    var isFinished: Bool {
+        return result != nil
+    }
+    var lastOperatorType : OperatorType? {
+        guard let lastElement = elements.last,
+              let operatorType = convertIntoOperator(lastElement) else { return nil }
+        return operatorType
+    }
+    private var savedIndex: Int = 0
     private var elements: [String] {
         return equation.split(separator: " ").map { "\($0)"}
     }
     private var isEnoughElements: Bool {
         return elements.count >= 3
-    }
-    private var lastOperatorType : OperatorType? {
-        guard let lastElement = elements.last,
-              let operatorType = convertIntoOperator(lastElement) else { return nil }
-        return operatorType
     }
     private var isEquationReduced: Bool {
         if lastOperatorType == .equal && elements.count <= 4 {
@@ -45,15 +57,10 @@ class Calcul {
     private var lastOperatorHasPriority: Bool {
         if lastOperatorType == .equal {
             let element = elements[elements.count - 3]
-            guard let newOperatorType = convertIntoOperator(element) else { return false }
-            if newOperatorType == .multiply || newOperatorType == .divide {
-                return true
+            if let newOperatorType = convertIntoOperator(element) {
+                if newOperatorType == .multiply || newOperatorType == .divide { return true }
             }
-        } else {
-            if lastOperatorType == .multiply || lastOperatorType == .divide {
-                return true
-            }
-        }
+        } else if lastOperatorType == .multiply || lastOperatorType == .divide { return true }
         return false
     }
     private var canCalculate = false

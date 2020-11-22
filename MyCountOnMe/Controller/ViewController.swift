@@ -39,20 +39,33 @@ class ViewController: UIViewController {
         updateText(with: number)
     }
     private func handleOperation(tag: Int) {
-        switch tag {
-        case 0: updateText(with: .plus)
-        case 1: updateText(with: .minus)
-        case 2: updateText(with: .divide)
-        case 3: updateText(with: .multiply)
-        case 4: updateText(with: .equal)
-        default: break
-        }
-        calcul.startCalculationProcess()
-        guard let result = calcul.result else { return }
-        if calcul.isResultADouble {
-            updateText(with: result.round(to: 2))
+        if calcul.canAddOperator {
+            if !calcul.isFinished {
+                print(calcul.equation)
+                switch tag {
+                case 0: updateText(with: .plus)
+                case 1: updateText(with: .minus)
+                case 2: updateText(with: .divide)
+                case 3: updateText(with: .multiply)
+                case 4: updateText(with: .equal)
+                default: break
+                }
+                calcul.startCalculationProcess()
+                guard let result = calcul.result else {
+                    if calcul.lastOperatorType == .equal {
+                        showSystemAlert(message: "You can't divide by 0 !")
+                    }
+                    return
+                }
+                if calcul.isResultADouble {
+                    updateText(with: result.round(to: 2))
+                } else {
+                    updateText(with: Int(result))
+                }
+            } else {
+                showSystemAlert(message: "Please start a new calcul")}
         } else {
-            updateText(with: Int(result))
+            showSystemAlert(message: "Please enter a number !")
         }
     }
     
