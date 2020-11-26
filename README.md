@@ -1,4 +1,4 @@
-# README GitHub
+# README Github
 
 This project is part of the OpenClassrooms Learning Program and available on [GitHub](https://github.com/raphpay/CountOnMe).
 
@@ -16,21 +16,18 @@ The architecture of the application was initially not MVC. The goal was to refac
 
 The model is a simple file named `Calcul.swift`.
 
-Only five properties and one function are not private : 
+Here is the mini map of the file.
 
-- Properties :
-    - `equation` : The overall equation
-    - `result` : The result of the equation
-- Computed Properties :
-    - `canAddOperator` : Whether the user can add or not an operator
-    - `isFinished` : Return whether the calculation is finished ?
-    - `resultIsADouble` : Return whether the result is a double.
-- Method :
-    - `Calculate(operation: String)` : Takes the logic of the calculation with as a parameter the equation.
-
-All the private properties and methods are here in support of the main method described below. 
+- **Properties :** All the accessible properties
+- **Computed Properties :** The computed accessible properties
+- **Private properties :** The private properties and computed properties
+- **Methods :** The only accessible method
+- **Calculation methods :** The methods relative to the calculation process
+- **Helper Methods :**  Helpful methods to organize the properties **:**
 
 ### Controller :
+
+Here is the mini map of the controller.
 
 The purpose of the controller is to take care of the actions of the user. 
 
@@ -44,7 +41,9 @@ The tests is based on BDD ( Behavior Driven Development ) and was created follow
 
 ### Extension
 
-The extension created is here to add a functionality to the view controller : present an alert controller, with default title and message.
+The UIViewController extension created is here to add a functionality to the view controller : present an alert controller, with default title and message.
+
+The Double extension created is here to explicitly round a number with a certain number of digits.
 
 ## Notes
 
