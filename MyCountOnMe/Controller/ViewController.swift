@@ -16,7 +16,11 @@ class ViewController: UIViewController {
     
     // MARK: - Actions
     @IBAction func numberButtonTapped(_ sender: UIButton) {
-        updateText(with: sender.tag)
+        if !calcul.isFinished {
+            updateText(with: sender.tag)
+        } else {
+            showSystemAlert(message: "Please start a new calcul")
+        }
     }
     @IBAction func operatorButtonTapped(_ sender: UIButton) {
         handleOperation(tag: sender.tag)
