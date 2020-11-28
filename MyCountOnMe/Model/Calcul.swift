@@ -88,6 +88,7 @@ class Calcul {
         if isEnoughElements {
             //We check if there is enough elements to start the process
             if isEquationReduced {
+                print("isEquationReduced")
                 // If the equation is reduced, then there is only one operator.
                 // We can then calculate
                 calculate(at: 0)
@@ -96,17 +97,21 @@ class Calcul {
                 if lastOperatorHasPriority {
                     // If the last one has priority
                     if canCalculate {
+                        print("canCalculate")
                         // There is a number after the last operator
                         // We calculate at the saved index ( see line 107 and 115 )
                         calculate(at: savedIndex)
                         canCalculate = false
                         // The equation has been changed, we double-check before exiting the process
                         if isEquationReduced {
+                            print("isEquationReduced")
                             // The equation has only one operator
                             calculate(at: 0)
                         } else {
+                            print("! isEquationReduced")
                             // The equation has two operators or more
                             if lastOperatorHasPriority {
+                                print("lastOperatorHasPriority")
                                 // The last operator has priority
                                 // There is no number after the operator, we wait for one.
                                 savedIndex = elements.count - 2
@@ -122,6 +127,11 @@ class Calcul {
                     }
                 } else {
                     // The last operator doesn't have priority, we can calculate at the first element
+                    if savedIndex != 0 {
+                        calculate(at: savedIndex)
+                        savedIndex = 0
+                        canCalculate = false
+                    }
                     calculate(at: 0)
                 }
             }
@@ -130,6 +140,7 @@ class Calcul {
     
     //MARK: - Calculation methods
     private func calculate(at index : Int) {
+        print("calculate")
         // We check if there is at least two operands and one operator
         // Then following the operator type, we do the right math
         // If the equation is reduced, the current result is the final result
@@ -175,6 +186,7 @@ class Calcul {
     
     //MARK: - Helper Methods
     private func createNewEquation(with currentResult: Double, at index: Int) {
+        print("create")
         // We create a local copy of the elements,
         // We change the copy, removing the elements not necessary
         // We update with the current result at the index of the first operand
