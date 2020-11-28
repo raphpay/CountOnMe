@@ -88,7 +88,6 @@ class Calcul {
         if isEnoughElements {
             //We check if there is enough elements to start the process
             if isEquationReduced {
-                print("isEquationReduced")
                 // If the equation is reduced, then there is only one operator.
                 // We can then calculate
                 calculate(at: 0)
@@ -97,7 +96,6 @@ class Calcul {
                 if lastOperatorHasPriority {
                     // If the last one has priority
                     if canCalculate {
-                        print("canCalculate")
                         // There is a number after the last operator
                         // We calculate at the saved index ( see line 107 and 115 )
                         calculate(at: savedIndex)
@@ -108,10 +106,8 @@ class Calcul {
                             // The equation has only one operator
                             calculate(at: 0)
                         } else {
-                            print("! isEquationReduced")
                             // The equation has two operators or more
                             if lastOperatorHasPriority {
-                                print("lastOperatorHasPriority")
                                 // The last operator has priority
                                 // There is no number after the operator, we wait for one.
                                 savedIndex = elements.count - 2
